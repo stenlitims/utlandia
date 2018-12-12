@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div class="main-wrap">
     <mainHeader/>
     <nuxt/>
   </div>
@@ -17,4 +17,5 @@ export default {
 
 
 <style lang="scss">
+@import "sass/style";
 </style>
