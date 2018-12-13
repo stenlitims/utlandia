@@ -6,7 +6,8 @@ Vue.use(Vuex)
 const store = () => new Vuex.Store({
 
   state: {
-    headerClass: ""
+    headerClass: "",
+    apiUrl: 'https://web.utlandia.com/api?id='
   },
   mutations: {
     setHeader (state, payload) {

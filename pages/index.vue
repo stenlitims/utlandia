@@ -2,17 +2,10 @@
   <div class="content">
     <section class="section section1" id="section1">
       <div class="container">
-        <div class="main-heading a-heading">ЖИВИ КЛАСНО</div>
+        <div class="main-heading a-heading" v-html="data.introtext"></div>
         <div class="row">
           <div class="col-lg-5">
-            <div class="text-inner a-main-text">
-              <p>Чи бажали б ви жити в затишному, тихому місці? Якомога далі від великих магістралей і міського шуму. Там, де можна спокійно і комфортно відпочити після напруженого трудового дня.</p>
-              <p>
-                <b>Таке місце є.
-                  <br>Це — житловий комплекс «Utlandia».
-                </b>
-              </p>
-            </div>
+            <div class="text-inner a-main-text" v-html="data.content"></div>
           </div>
         </div>
 
@@ -61,9 +54,7 @@
       <div class="container">
         <div class="row-slide">
           <div class="num a-num">01</div>
-          <div class="text a-text">Живи класно в Ютландії!
-            <br>Поряд з кращим парком у місті.
-          </div>
+          <div class="text a-text" v-html="data.list[0].text"></div>
         </div>
       </div>
       <div class="a-bg"></div>
@@ -91,10 +82,7 @@
         <div class="row-slide">
           <div class="num a-num">02</div>
           <div class="text">
-            <div class="a-text">Живи класно в Ютландії,
-              <br>бо тут в кожній квартирі
-              <br>є власна тераса
-            </div>
+            <div class="a-text" v-html="data.list[1].text"></div>
           </div>
         </div>
       </div>
@@ -113,10 +101,7 @@
       <div class="container">
         <div class="row-slide">
           <div class="num a-num">03</div>
-          <div class="text a-text">Живи класно
-            <br>в Ютландії,
-            <br>бо тут є зручний підземний паркінг
-          </div>
+          <div class="text a-text" v-html="data.list[2].text"></div>
         </div>
       </div>
     </section>
@@ -124,10 +109,7 @@
       <div class="container">
         <div class="row-slide">
           <div class="num a-num">04</div>
-          <div class="text a-text">Живи класно в Ютландії,
-            <br>бо тут ти будеш
-            <br>цілодобово у безпеці
-          </div>
+          <div class="text a-text" v-html="data.list[3].text"></div>
         </div>
       </div>
       <div class="img1 a-img-r2">
@@ -139,11 +121,7 @@
         <div class="container">
           <div class="row-slide">
             <div class="num a-num">05</div>
-            <div class="text a-text">Живи класно в Ютландії,
-              <br>бо тут зони відпочинку
-              <br>та дитячі майданчики
-              <br>по всій території
-            </div>
+            <div class="text a-text" v-html="data.list[4].text"></div>
           </div>
         </div>
       </div>
@@ -156,8 +134,11 @@
 </template>
 
 <script>
+import axios from "axios";
+
 export default {
   components: {},
+
   data() {
     return {
       title: "Utlandia",
@@ -165,20 +146,37 @@ export default {
       activeScrollNav: false
     };
   },
+  asyncData({ params }) {
+    let api = process.env.api;
+    if (!api) {
+      let api = context.env.api;
+    }
+    return axios.get(api + "1").then(res => {
+      return { data: res.data };
+    });
+  },
   head() {
+    let title = this.data.pagetitle + " | Utlandia";
+    if (this.data.longtitle) {
+      title = this.data.longtitle;
+    }
     return {
-      title: this.title,
+      title: title,
       meta: [
         {
           hid: "description",
           name: "description",
-          content: "My custom description"
+          content: this.data.description
         }
       ]
     };
   },
   mounted() {
-    $("body").addClass("loaded");
+    //  $("body").addClass("loaded");
+    this.$store.commit("setHeader", '');
+    setTimeout(() => {
+      $("body").addClass("loaded");
+    }, 300);
     var heightSlide = $(".slide1").outerHeight() - 100;
     $(document).scroll(() => {
       var scroll = $(window).scrollTop();
@@ -224,11 +222,6 @@ export default {
       $(".slide").removeClass("active");
       let sec = $(currentItem).attr("href");
       $(sec).addClass("active");
-      //
-      // if($(sec+ ' .js-slideUp').length > 0){
-      //   this.slideUp(sec+ ' .js-slideUp', .5);
-      // }
-
       this.$store.commit("setHeader", type);
     },
     scrollto(el) {
@@ -240,11 +233,6 @@ export default {
         },
         500
       );
-    },
-
-    slideUp(el, t = 1, d = 0.3) {
-      let tl = new TimelineMax();
-      tl.fromTo(el, d, { y: -100 }, { y: 0 }, t);
     }
   }
 };
@@ -274,6 +262,9 @@ export default {
     font-size: 44px;
     color: #ff0000;
     margin-top: -2%;
+  }
+  p {
+    margin-bottom: 0;
   }
 }
 .slide {
@@ -382,14 +373,17 @@ export default {
     .img1 {
       bottom: 23%;
       left: 5%;
+      text-align: center;
     }
     .img2 {
       bottom: 65%;
       left: 44%;
+      text-align: center;
     }
     .img3 {
       bottom: 23%;
       right: 5%;
+      text-align: center;
     }
   }
 }
@@ -450,6 +444,9 @@ export default {
     .text {
       font-size: 60px;
       color: #fff;
+    }
+    p {
+      margin-bottom: 0;
     }
   }
   .img1 {
@@ -634,6 +631,7 @@ export default {
 
 .a-t-logo {
   transform: translate(-150%, 0);
+  opacity: 0;
   transition-delay: 1s;
 }
 
@@ -659,6 +657,118 @@ export default {
   .a-t-logo {
     opacity: 1;
     transform: translate(0, 0);
+  }
+}
+
+@media (max-width: 1400px) {
+  .section {
+    padding-top: 130px;
+  }
+  .section1:before {
+    top: 130px;
+  }
+  .main-heading {
+    font-size: 100px;
+    padding-top: 2%;
+  }
+  .dom {
+    transform: translate(-35%, 0);
+    height: 66.5vh;
+  }
+  .text-inner {
+    font-size: 18px;
+  }
+
+  .row-slide .num {
+    font-size: 160px;
+  }
+  .row-slide .text {
+    font-size: 40px;
+  }
+  .slide1 .bg img {
+    max-width: 75%;
+  }
+  .slide1 .bg .img1 {
+    bottom: 25%;
+  }
+  .slide2 .row-slide .text,
+  .slide4 .row-slide .text {
+    font-size: 46px;
+  }
+  .slide3 .row-slide .num {
+    margin-bottom: 20px;
+  }
+  .slide3 .row-slide .text {
+    font-size: 42px;
+  }
+}
+
+@media (max-width: 1300px) {
+  .row-slide .num {
+    font-size: 140px;
+  }
+}
+
+@media (max-width: 1200px) {
+  .section {
+    padding-top: 110px;
+  }
+  .section1 {
+    overflow: hidden;
+    &:before {
+      top: 110px;
+    }
+  }
+  .main-heading {
+    font-size: 80px;
+  }
+
+  .dom {
+    transform: translate(-20%, 0);
+    height: 61.5vh;
+  }
+
+  .row-slide .num {
+    margin-right: 70px;
+    font-size: 120px;
+  }
+  .row-slide .text {
+    margin-top: 0;
+    font-size: 36px;
+  }
+  .slide1 .bg img {
+    max-width: 60%;
+  }
+  .scroll-nav {
+    bottom: 3.5%;
+  }
+  .slide1 .bg .img1 {
+    bottom: 27%;
+  }
+  .slide2 .row-slide .text,
+  .slide4 .row-slide .text {
+    font-size: 38px;
+  }
+  .slide3 .row-slide .text {
+    font-size: 38px;
+  }
+  .slide3 .row-slide .num {
+    margin-bottom: 5px;
+  }
+  .slide4 .img1{
+    height: 76vh;
+  }
+  .slide4 .row-slide .num{
+    margin-bottom: 24px;
+  }
+  .slide5 .bg{
+    margin-top: 0;
+  }
+  .slide5 .row-slide .num{
+    margin-bottom: 10px;
+  }
+  .slide5 .row-slide .text{
+    font-size: 30px;
   }
 }
 </style>
