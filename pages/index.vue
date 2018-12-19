@@ -2,10 +2,12 @@
   <div class="content">
     <section class="section section1" id="section1">
       <div class="container">
-        <div class="main-heading a-heading" v-html="data.introtext"></div>
-        <div class="row">
-          <div class="col-lg-5">
-            <div class="text-inner a-main-text" v-html="data.content"></div>
+        <div class="main-text">
+          <div class="main-heading a-heading" v-html="data.introtext"></div>
+          <div class="row">
+            <div class="col-lg-5">
+              <div class="text-inner a-main-text" v-html="data.content"></div>
+            </div>
           </div>
         </div>
 
@@ -143,7 +145,8 @@ export default {
     return {
       title: "Utlandia",
       scroll: null,
-      activeScrollNav: false
+      activeScrollNav: false,
+      mobile: false
     };
   },
   asyncData({ params }) {
@@ -173,11 +176,18 @@ export default {
   },
   mounted() {
     //  $("body").addClass("loaded");
-    this.$store.commit("setHeader", '');
+    setTimeout(() => {
+      this.$store.commit("setHeader", "");
+    }, 400);
+
+    if ($(window).width() < 991) {
+      this.mobile = true;
+    }
+
     setTimeout(() => {
       $("body").addClass("loaded");
     }, 300);
-    var heightSlide = $(".slide1").outerHeight() - 100;
+    var heightSlide = $(".slide1").outerHeight() - 200;
     $(document).scroll(() => {
       var scroll = $(window).scrollTop();
       if (scroll > heightSlide) {
@@ -186,6 +196,36 @@ export default {
         this.activeScrollNav = false;
       }
     });
+
+    if ($(window).width() < 991) {
+      for (let item of $(".section")) {
+        //     console.log(item);
+        var mc = new Hammer(item);
+        mc.get("swipe").set({ direction: Hammer.DIRECTION_ALL });
+        mc.on("swipeup swipedown", ev => {
+          //   console.log(ev.type);
+          if (ev.type == "swipeup") {
+            if ($(".scrollactive-nav .is-active").length > 0) {
+              let el = $(".scrollactive-nav .is-active")
+                .next()
+                .attr("href");
+              this.scrollto(el);
+            } else {
+              let el = $(".scrollactive-nav a:first-child").attr("href");
+              this.scrollto(el);
+            }
+          } else {
+            if ($(".scrollactive-nav .is-active").length > 0) {
+              let el = $(".scrollactive-nav .is-active")
+                .prev()
+                .attr("href");
+              if (!el) el = "#section1";
+              this.scrollto(el);
+            }
+          }
+        });
+      }
+    }
 
     $(document).on("mousewheel DOMMouseScroll", event => {
       if ($(".slide").length === 0 || $("html, body").is(":animated")) return;
@@ -215,6 +255,22 @@ export default {
         }
       }
     });
+
+    // $("body").swipe({
+    //   swipe: function(
+    //     event,
+    //     direction,
+    //     distance,
+    //     duration,
+    //     fingerCount,
+    //     fingerData
+    //   ) {
+    //  //   if ($(".slide").length === 0 || $("html, body").is(":animated")) return;
+
+    //     event.preventDefault();
+    //     console.log(direction);
+    //   }
+    // });
   },
   methods: {
     onItemChanged(event, currentItem, lastActiveItem) {
@@ -224,15 +280,37 @@ export default {
       $(sec).addClass("active");
       this.$store.commit("setHeader", type);
     },
+
+    setSection(sec) {
+      $(".slide").removeClass("active");
+      $(sec).addClass("active");
+      $(".scroll-nav a").removeClass("is-active");
+      $(".scroll-nav a[href='" + sec + "']").addClass("is-active");
+    },
+
     scrollto(el) {
       if (!el) return;
       // console.log(el);
-      $("html, body").animate(
-        {
-          scrollTop: $(el).offset().top
-        },
-        500
-      );
+      // $("html, body").animate(
+      //   {
+      //     scrollTop: $(el).offset().top
+      //   },
+      //   500
+      // );
+      let offset = 0;
+      if (this.mobile) {
+        offset = 1;
+      }
+      if (el == "#slide5") {
+        offset = 10;
+      }
+      $("body").scrollTo(el, 500, {
+        offset: offset,
+        onAfter: () => {
+          this.setSection(el);
+          //  console.log(234);
+        }
+      });
     }
   }
 };
@@ -755,20 +833,212 @@ export default {
   .slide3 .row-slide .num {
     margin-bottom: 5px;
   }
-  .slide4 .img1{
+  .slide4 .img1 {
     height: 76vh;
   }
-  .slide4 .row-slide .num{
+  .slide4 .row-slide .num {
     margin-bottom: 24px;
   }
-  .slide5 .bg{
+  .slide5 .bg {
     margin-top: 0;
   }
-  .slide5 .row-slide .num{
+  .slide5 .row-slide .num {
     margin-bottom: 10px;
   }
-  .slide5 .row-slide .text{
+  .slide5 .row-slide .text {
     font-size: 30px;
+  }
+}
+
+@media (max-width: 991px) {
+  body {
+    overflow: hidden;
+  }
+  .section {
+    height: calc(var(--vh, 1vh) * 100);
+    min-height: calc(var(--vh, 1vh) * 100);
+  }
+  .main-text {
+    display: flex;
+    flex-direction: column;
+    .text-inner {
+      p:last-child {
+        max-width: 50%;
+      }
+    }
+  }
+  .main-heading {
+    order: 1;
+  }
+  .section1:before {
+    top: 240px;
+  }
+
+  .section1 .t-logo {
+    display: none;
+  }
+  .main-heading {
+    padding-top: 0;
+  }
+  .section {
+    padding-top: 130px;
+    overflow: hidden;
+  }
+  .dom {
+    transform: translate(-50%, 0);
+    height: 61.5vh;
+  }
+  .row-slide {
+    display: block;
+    .num {
+      margin-bottom: 30px;
+    }
+  }
+  .slide2 .row-slide .text {
+    transform: none;
+  }
+  .row-slide .num {
+    font-size: 176px;
+  }
+  .slide4 .img1 {
+    right: 0;
+    img {
+      transform: translate(18%, 0);
+    }
+  }
+  .slide4 .img1 {
+    height: 64vh;
+  }
+  .slide4 .row-slide {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    height: calc(100vh - 280px);
+    .text {
+      margin-top: auto;
+    }
+  }
+  .main-heading {
+    z-index: 20;
+  }
+}
+
+@media (max-width: 768px) {
+  .section {
+    padding-top: 100px;
+  }
+  .text-inner {
+    font-size: 16px;
+  }
+  .main-heading {
+    line-height: 1.1;
+    margin-top: -10px;
+    position: relative;
+  }
+  .dom {
+    height: 50vh;
+  }
+  .row-slide .num {
+    font-size: 124px;
+  }
+  .row-slide .text {
+    margin-top: 0;
+    font-size: 30px;
+  }
+  .row-slide .num {
+    margin-bottom: 10px;
+  }
+  .section {
+    padding-top: 94px;
+  }
+  .slide1 .bg .img1 {
+    left: -2%;
+  }
+  .slide1 .bg .img3 {
+    right: -5%;
+  }
+  .scroll-nav a {
+    font-size: 34px;
+  }
+  .scroll-nav {
+    bottom: 2.5%;
+  }
+  .slide1 .bg img {
+    max-width: 50%;
+  }
+  .slide1 .a-bg,
+  .slide1 .bg {
+    height: 40vh;
+  }
+  .slide2 .row-slide .text,
+  .slide4 .row-slide .text,
+  .slide3 .row-slide .text {
+    font-size: 30px;
+  }
+  .slide3 .row-slide {
+    max-width: 100%;
+    br {
+      display: none;
+    }
+  }
+}
+@media (max-width: 560px) {
+  .main-heading {
+    font-size: 70px;
+  }
+  .dom {
+    height: 44vh;
+  }
+}
+@media (max-width: 440px) {
+  .text-inner {
+    font-size: 14px;
+  }
+  .main-heading {
+    font-size: 60px;
+  }
+  .scroll-nav a {
+    font-size: 22px;
+    margin: 0 10px;
+  }
+  .scroll-nav {
+    left: 3%;
+  }
+  .row-slide .num {
+    font-size: 120px;
+  }
+  .row-slide .text {
+    font-size: 24px;
+  }
+  .slide1 .bg .img1 {
+    width: 300px;
+    left: -17%;
+  }
+  .slide1 .bg .img3 {
+    width: 300px;
+    right: -17%;
+  }
+  .slide1 .bg .img2 {
+    width: 120px;
+    left: 33%;
+    bottom: 72%;
+  }
+  .slide2 .row-slide .text,
+  .slide4 .row-slide .text,
+  .slide3 .row-slide .text {
+    font-size: 22px;
+  }
+  .slide2 .row-slide .text {
+    width: 60%;
+  }
+  .slide4 .row-slide {
+    height: calc(100vh - 205px);
+  }
+  .slide5 .img1 {
+    display: none;
+  }
+  .slide5 .row-slide .text {
+    font-size: 24px;
   }
 }
 </style>

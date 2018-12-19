@@ -362,7 +362,7 @@ button {
 .page-enter-active::after,
 .page-leave-active::before,
 .page-leave-active::after {
-  transition: transform 650ms cubic-bezier(.17,.67,.54,.98);
+  transition: transform 350ms cubic-bezier(.17,.67,.54,.98);
 }
 .page-enter-active::before,
 .page-leave-active::before {
@@ -391,7 +391,7 @@ button {
   background-color: #004AFF;
 }
 .page-leave::before {
-  transform: translate(-100%,  0) scaleX(-1);
+  transform: translate(-10 0%,  0) scaleX(-1);
 }
 .page-leave-to::before {
   transform: scaleX(-1);
@@ -401,7 +401,7 @@ button {
 }
 .page-enter-to::before,
 .page-enter-to::after {
-  transform: translate(calc(100% ), 0);
+  transform: translate(100%, 0);
 }
 
 .p-header{

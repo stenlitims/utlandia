@@ -1,6 +1,6 @@
 <template>
   <div class="content">
-    <hodRobot :data="data"></hodRobot>
+    <hodRobot :data="data" :galsh="false"></hodRobot>
   </div>
 </template>
 
@@ -21,12 +21,16 @@ export default {
     if (!api) {
       let api = context.env.api;
     }
-    return axios.get(api + "7").then(res => {
+    let url = api + "7";
+    if (params.id) {
+      url = url + "&m=" + params.id;
+    }
+    return axios.get(url).then(res => {
       return { data: res.data };
     });
   },
   head() {
-    let title = 'Хід будівнитства - ' + this.data.pagetitle + " | Utlandia";
+    let title = "Хід будівнитства - " + this.data.pagetitle + " | Utlandia";
     if (this.data.longtitle) {
       title = this.data.longtitle;
     }
@@ -42,7 +46,9 @@ export default {
     };
   },
   mounted() {
-    this.$store.commit("setHeader", "shadow");
+    setTimeout(() => {
+      this.$store.commit("setHeader", "shadow");
+    }, 400);
   },
   methods: {}
 };

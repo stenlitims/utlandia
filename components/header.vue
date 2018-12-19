@@ -4,7 +4,7 @@
       <div class="logo">
         <div class="cr"></div>
         <a href="/">
-          <img src="images/logo-utlandia.svg" alt>
+          <img src="/images/logo-utlandia.svg" alt>
         </a>
       </div>
 
@@ -114,7 +114,7 @@ export default {
     }
   }
   &.shadow {
-    text-shadow: 1px 1px 2px rgba(0,0,0,.6);
+    text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.6);
     &:before {
       background: linear-gradient(
         to bottom,
@@ -196,6 +196,34 @@ export default {
     .container {
       align-items: center;
     }
+  }
+}
+
+@media (max-width: 991px) {
+  .logo .cr {
+    width: 200px;
+    height: 210px;
+    top: -150px;
+  }
+  .logo img {
+    width: 110px;
+  }
+  .header .container {
+    align-items: flex-start;
+  }
+}
+
+@media (max-width: 768px) {
+  .top-phone {
+    display: none;
+  }
+  .logo img {
+    width: 86px;
+  }
+  .logo .cr {
+    width: 152px;
+    height: 180px;
+    top: -129px;
   }
 }
 </style>
